@@ -1,0 +1,424 @@
+buildCmd: mvn -e -X -Dmaven.enforcer.skip=true -Denforcer.skip=true -Dair.check.skip-all=true -Dmaven.test.skip=true compile
+testCmd: true
+skipVerification: true
+cbmcArguments:
+  # Do not generate coverage comments on generated tests.
+  java-generate-no-comments: true
+  # Constrain the size of arrays created in the analyzed code.
+  java-max-vla-length: 100000
+phases:
+  -
+    # Phase 0 PRETTY, SIMPLE and SMART - pretty tests, do not test private methods directly, Smart-Harness
+    timeout: 180
+    cbmcArguments:
+      # Use simple models first containers (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # Instrument the file as opposed to the function only
+      cover-only: file
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Instantiate classes using the simplest constructor strategy
+      smart-harness: simplest-constructor-and-nondet
+  -
+    # Phase 1 PRETTY AND COMPLEX - standard models only, pretty tests, do not test private methods directly, input factory
+    timeout: 180
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 2
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+      # Limit input factory recursive depth (default 0 = no recursion allowed)
+      java-test-input-factory-bmc-recursion-limit: 4
+  -
+    # Phase 2 FIFO Strategy - pretty tests, do not test private methods directly, fifo
+    timeout: 100
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Add constraint that strings are printable
+      max-nondet-string-length: 100
+      # Explores the program tree breadth-first.
+      paths: fifo
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: false
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 3 Exceptions - do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 30
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 4 Direct testing - test private methods directly, increased reflection
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # If the logs contain output of the following then proceed to phase X
+    nextPhase:
+      # If the function is not analysable then do not pass onto the next phase
+      not_analyzed: null
+  -
+    # PHASE 5 Mocking - aggressive mocking, do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 3000
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Only load the class (and related inner/outer classes) containing the method under test,
+      load-containing-class-only: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 100
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+units:
+- target:
+   - dir: services/target/classes
+     file: org/keycloak/utils/TotpUtils.class
+     sourceDir: services/src/main/java
+     sourceFile: org/keycloak/utils/TotpUtils.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmModel.java
+ - target:
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/UserCacheSession.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/UserCacheSession.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/CachedUserConsent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/CachedUserConsent.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSession.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSession.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/UserCacheManager.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/UserCacheManager.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ProtocolMapperModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ProtocolMapperModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RoleModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RoleModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/GroupModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/GroupModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientScopeModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientScopeModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakTransaction.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakTransaction.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/FederatedIdentityModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/FederatedIdentityModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserConsentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserConsentModel.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/KeycloakUriBuilder.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/KeycloakUriBuilder.java
+ - target:
+   - dir: authz/policy/common/target/classes
+     file: org/keycloak/authorization/policy/provider/time/TimePolicyProvider.class
+     sourceDir: authz/policy/common/src/main/java
+     sourceFile: org/keycloak/authorization/policy/provider/time/TimePolicyProvider.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/policy/evaluation/Evaluation.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/policy/evaluation/Evaluation.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/Policy.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/Policy.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/PathHelper.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/PathHelper.java
+ - target:
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/utils/Base32.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/utils/Base32.java
+ - target:
+   - dir: core/target/classes
+     file: org/keycloak/util/TokenUtil.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/util/TokenUtil.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/JsonWebToken.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/JsonWebToken.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/RefreshToken.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/RefreshToken.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/NetworkUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/NetworkUtils.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/HtmlUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/HtmlUtils.java
+ - target:
+   - dir: services/target/classes
+     file: org/keycloak/theme/TemplatingUtil.class
+     sourceDir: services/src/main/java
+     sourceFile: org/keycloak/theme/TemplatingUtil.java
+ - target:
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/processing/web/util/PostBindingUtil.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/processing/web/util/PostBindingUtil.java
+ - target:
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/Message.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/Message.java
+ - target:
+   - dir: integration/client-registration/target/classes
+     file: org/keycloak/client/registration/HttpUtil.class
+     sourceDir: integration/client-registration/src/main/java
+     sourceFile: org/keycloak/client/registration/HttpUtil.java
+   - dir: integration/client-registration/target/classes
+     file: org/keycloak/client/registration/Auth.class
+     sourceDir: integration/client-registration/src/main/java
+     sourceFile: org/keycloak/client/registration/Auth.java
+   - dir: integration/client-registration/target/classes
+     file: org/keycloak/client/registration/HttpErrorException.class
+     sourceDir: integration/client-registration/src/main/java
+     sourceFile: org/keycloak/client/registration/HttpErrorException.java
+ - target:
+   - dir: services/target/classes
+     file: org/keycloak/keys/AbstractEcdsaKeyProviderFactory.class
+     sourceDir: services/src/main/java
+     sourceFile: org/keycloak/keys/AbstractEcdsaKeyProviderFactory.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/provider/ProviderConfigurationBuilder.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/provider/ProviderConfigurationBuilder.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSession.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSession.java
+ - target:
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/events/Event.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/events/Event.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/events/EventType.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/events/EventType.java
+ - target:
+   - dir: core/target/classes
+     file: org/keycloak/crypto/JavaAlgorithm.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/crypto/JavaAlgorithm.java
+ - target:
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/HttpUtil.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/HttpUtil.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/HeadersBody.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/HeadersBody.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/HeadersBodyStatus.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/HeadersBodyStatus.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/Headers.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/Headers.java
+ - target:
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/SPMetadataDescriptor.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/SPMetadataDescriptor.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/UriUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/UriUtils.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+ - target:
+   - dir: adapters/spi/servlet-adapter-spi/target/classes
+     file: org/keycloak/adapters/servlet/FilterSessionStore.class
+     sourceDir: adapters/spi/servlet-adapter-spi/src/main/java
+     sourceFile: org/keycloak/adapters/servlet/FilterSessionStore.java
+   - dir: adapters/spi/adapter-spi/target/classes
+     file: org/keycloak/adapters/spi/HttpFacade.class
+     sourceDir: adapters/spi/adapter-spi/src/main/java
+     sourceFile: org/keycloak/adapters/spi/HttpFacade.java
+   - dir: adapters/spi/adapter-spi/target/classes
+     file: org/keycloak/adapters/spi/KeycloakAccount.class
+     sourceDir: adapters/spi/adapter-spi/src/main/java
+     sourceFile: org/keycloak/adapters/spi/KeycloakAccount.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+ - target:
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/LDAPConstants.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/LDAPConstants.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/StringPropertyReplacer.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/StringPropertyReplacer.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/ServerCookie.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/ServerCookie.java
+
