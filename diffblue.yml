@@ -1,4 +1,4 @@
-buildCmd: mvn -e -X -Dlicense.skip=true -Dmaven.enforcer.skip=true  -Denforcer.skip=true -Dair.check.skip-all=true -Dmaven.test.skip=true package
+buildCmd: mvn -e -X -Dlicense.skip=true -Dmaven.enforcer.skip=true  -Denforcer.skip=true -Dair.check.skip-all=true -Dmaven.test.skip=true -pl core -am package
 testCmd: true
 skipVerification: true
 cbmcArguments:
@@ -173,3 +173,137 @@ phases:
       cover-function-only: false
       # instrument the file as opposed to the function only
       cover-only: file
+units:
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/PathHelper.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/PathHelper.java
+ - target:
+   - dir: core/target/classes
+     file: org/keycloak/util/TokenUtil.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/util/TokenUtil.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWEUtils.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWEUtils.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Base64$OutputStream.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Base64.java
+   - dir: core/target/classes
+     file: org/keycloak/util/JsonSerialization.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/util/JsonSerialization.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWE.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWE.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWERegistry.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWERegistry.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Base64.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Base64.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jws/JWSInput.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jws/JWSInput.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWEHeader.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWEHeader.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/RefreshToken.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/RefreshToken.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/JsonWebToken.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/JsonWebToken.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWEKeyStorage.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWEKeyStorage.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Base64Url.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Base64Url.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/alg/JWEAlgorithmProvider.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/alg/JWEAlgorithmProvider.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWEException.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWEException.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/enc/JWEEncryptionProvider.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/enc/JWEEncryptionProvider.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jws/JWSInputException.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jws/JWSInputException.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/ServerCookie.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/ServerCookie.java
+ - target:
+   - dir: core/target/classes
+     file: org/keycloak/crypto/JavaAlgorithm.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/crypto/JavaAlgorithm.java
+ - target:
+   - dir: core/target/classes
+     file: org/keycloak/Config.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/Config.java
+   - dir: core/target/classes
+     file: org/keycloak/Config$Scope.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/Config.java
+   - dir: core/target/classes
+     file: org/keycloak/Config$SystemPropertiesConfigProvider.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/Config.java
+   - dir: core/target/classes
+     file: org/keycloak/Config$ConfigProvider.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/Config.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/HtmlUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/HtmlUtils.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/KeycloakUriBuilder.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/KeycloakUriBuilder.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Encode.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Encode.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/PathHelper.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/PathHelper.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/UriUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/UriUtils.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/NetworkUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/NetworkUtils.java
