@@ -1,0 +1,1891 @@
+# Copyright 2019 Diffblue Limited. All Rights Reserved.
+cbmcArguments:
+  # Do not generate coverage comments on generated tests.
+  java-generate-no-comments: true
+  # Constrain the size of arrays created in the analyzed code.
+  java-max-vla-length: 100000
+phases:
+  -
+    # Phase 0 PRETTY, SIMPLE and SMART - pretty tests, do not test private methods directly, Smart-Harness
+    timeout: 180
+    cbmcArguments:
+      # Use simple models first containers (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # Instrument the file as opposed to the function only
+      cover-only: file
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Instantiate classes using the simplest constructor strategy
+      smart-harness: simplest-constructor-and-nondet
+  -
+    # Phase 1 PRETTY AND COMPLEX - standard models only, pretty tests, do not test private methods directly, input factory
+    timeout: 180
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 2
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+      # Limit input factory recursive depth (default 0 = no recursion allowed)
+      java-test-input-factory-bmc-recursion-limit: 4
+  -
+    # Phase 2 FIFO Strategy - pretty tests, do not test private methods directly, fifo
+    timeout: 100
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Add constraint that strings are printable
+      max-nondet-string-length: 100
+      # Explores the program tree breadth-first.
+      paths: fifo
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: false
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 3 Exceptions - do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 30
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 4 Direct testing - test private methods directly, increased reflection
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # If the logs contain output of the following then proceed to phase X
+    nextPhase:
+      # If the function is not analysable then do not pass onto the next phase
+      not_analyzed: null
+  -
+    # PHASE 5 Mocking - aggressive mocking, do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 3000
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Only load the class (and related inner/outer classes) containing the method under test,
+      load-containing-class-only: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 100
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+units:
+ - target:
+   - dir: core/target/classes
+     file: org/keycloak/crypto/JavaAlgorithm.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/crypto/JavaAlgorithm.java
+ - target:
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/LDAPConstants.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/LDAPConstants.java
+ - target:
+   - dir: services/target/classes
+     file: org/keycloak/theme/TemplatingUtil.class
+     sourceDir: services/src/main/java
+     sourceFile: org/keycloak/theme/TemplatingUtil.java
+ - target:
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/HttpUtil.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/HttpUtil.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/Headers.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/Headers.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/HeadersBody.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/HeadersBody.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/Header.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/Header.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/HttpResponseException.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/HttpResponseException.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/httpcomponents/HttpDelete.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/httpcomponents/HttpDelete.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/HeadersBodyStatus.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/HeadersBodyStatus.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/operations/LocalSearch.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/operations/LocalSearch.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/IoUtil.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/IoUtil.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/ObjectUtil.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/ObjectUtil.java
+   - dir: core/target/classes
+     file: org/keycloak/util/JsonSerialization.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/util/JsonSerialization.java
+   - dir: integration/client-cli/admin-cli/target/classes
+     file: org/keycloak/client/admin/cli/util/HttpUtil$1.class
+     sourceDir: integration/client-cli/admin-cli/src/main/java
+     sourceFile: org/keycloak/client/admin/cli/util/HttpUtil.java
+ - target:
+   - dir: services/target/classes
+     file: org/keycloak/protocol/saml/SamlClient.class
+     sourceDir: services/src/main/java
+     sourceFile: org/keycloak/protocol/saml/SamlClient.java
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/common/util/XmlKeyInfoKeyNameTransformer.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/common/util/XmlKeyInfoKeyNameTransformer.java
+   - dir: saml-core-api/target/classes
+     file: org/keycloak/saml/common/constants/JBossSAMLURIConstants.class
+     sourceDir: saml-core-api/src/main/java
+     sourceFile: org/keycloak/saml/common/constants/JBossSAMLURIConstants.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/ClientConfigResolver.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/ClientConfigResolver.java
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/SignatureAlgorithm.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/SignatureAlgorithm.java
+ - target:
+   - dir: core/target/classes
+     file: org/keycloak/Config.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/Config.java
+   - dir: core/target/classes
+     file: org/keycloak/Config$SystemPropertiesConfigProvider.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/Config.java
+   - dir: core/target/classes
+     file: org/keycloak/Config$Scope.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/Config.java
+   - dir: core/target/classes
+     file: org/keycloak/Config$ConfigProvider.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/Config.java
+ - target:
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/ClientAdapter.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/ClientAdapter.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserProvider.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/RoleAdapter.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/RoleAdapter.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/ClientEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/ClientEntity.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ModelException.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ModelException.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSession.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSession.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientScopeModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientScopeModel.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/RoleEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/RoleEntity.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ProtocolMapperModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ProtocolMapperModel.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/ProtocolMapperEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/ProtocolMapperEntity.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/ClientScopeAdapter.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/ClientScopeAdapter.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/KeycloakModelUtils.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/KeycloakModelUtils.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/ClientScopeClientMappingEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/ClientScopeClientMappingEntity.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RoleModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RoleModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ModelDuplicateException.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ModelDuplicateException.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/ClientAdapter$1.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/ClientAdapter.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/ClientAttributeEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/ClientAttributeEntity.java
+ - target:
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/RepresentationToModel.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/RepresentationToModel.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/authorization/ResourceServerRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/authorization/ResourceServerRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/storage/CacheableStorageProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/storage/CacheableStorageProviderModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/IdentityProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/IdentityProviderModel.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/RoleRepresentation$Composites.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/RoleRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSession.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSession.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserConsentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserConsentModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/provider/ProviderConfigProperty.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/provider/ProviderConfigProperty.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/authorization/ResourceOwnerRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/authorization/ResourceOwnerRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/RoleRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/RoleRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/storage/federated/UserFederatedStorageProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/storage/federated/UserFederatedStorageProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/OTPPolicy.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/OTPPolicy.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/StoreFactory.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/StoreFactory.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/credential/CredentialModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/credential/CredentialModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/DefaultAuthenticationFlows.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/DefaultAuthenticationFlows.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/FederatedIdentityRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/FederatedIdentityRepresentation.java
+   - dir: common/target/classes
+     file: org/keycloak/common/enums/SslRequired.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/enums/SslRequired.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/authorization/PermissionTicketRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/authorization/PermissionTicketRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/ApplicationRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/ApplicationRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RoleModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RoleModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/KeycloakModelUtils.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/KeycloakModelUtils.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/AuthenticationFlowRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/AuthenticationFlowRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/PrioritizedComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/PrioritizedComponentModel.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/ClaimRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/ClaimRepresentation.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/policy/provider/PolicyProviderFactory.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/policy/provider/PolicyProviderFactory.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/UserConsentRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/UserConsentRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/policy/PasswordPolicyNotMetException.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/policy/PasswordPolicyNotMetException.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/UriUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/UriUtils.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/Scope.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/Scope.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/DefaultKeyProviders.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/DefaultKeyProviders.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/AuthenticationExecutionRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/AuthenticationExecutionRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/PasswordPolicy$Builder.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/PasswordPolicy.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/RolesRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/RolesRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ModelException.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ModelException.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentFactory.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentFactory.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/ResourceServerStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/ResourceServerStore.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/UserRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/UserRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/ComponentExportRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/ComponentExportRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/UserFederationProviderRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/UserFederationProviderRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientModel.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/ComponentRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/ComponentRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/authorization/ScopeRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/authorization/ScopeRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/SocialLinkRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/SocialLinkRepresentation.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakContext.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakContext.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RequiredCredentialModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RequiredCredentialModel.java
+   - dir: core/target/classes
+     file: org/keycloak/util/JsonSerialization.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/util/JsonSerialization.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/policy/PasswordPolicyConfigException.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/policy/PasswordPolicyConfigException.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/AuthenticatorConfigRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/AuthenticatorConfigRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/ScopeMappingRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/ScopeMappingRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/RequiredActionProviderRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/RequiredActionProviderRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserCredentialManager.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserCredentialManager.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserModel$RequiredAction.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/PermissionTicketStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/PermissionTicketStore.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/authorization/ResourceRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/authorization/ResourceRepresentation.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/migration/MigrationProvider.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/migration/MigrationProvider.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/AbstractAuthenticationExecutionRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/AbstractAuthenticationExecutionRepresentation.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/PermissionTicket.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/PermissionTicket.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/ResourceStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/ResourceStore.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Base64.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Base64.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/ClientRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/ClientRepresentation.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/ResourceServer.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/ResourceServer.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/authorization/PolicyRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/authorization/PolicyRepresentation.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/Resource.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/Resource.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/GroupModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/GroupModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSessionFactory.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSessionFactory.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/storage/OnCreateComponent.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/storage/OnCreateComponent.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/ClientScopeRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/ClientScopeRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/ProtocolMapperRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/ProtocolMapperRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ProtocolMapperModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ProtocolMapperModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/migration/migrators/MigrationUtils.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/migration/migrators/MigrationUtils.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/IdentityProviderMapperModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/IdentityProviderMapperModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/AuthenticationFlowModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/AuthenticationFlowModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/AuthorizationProviderFactory.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/AuthorizationProviderFactory.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/GroupRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/GroupRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/FederatedIdentityModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/FederatedIdentityModel.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/authorization/AbstractPolicyRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/authorization/AbstractPolicyRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ScopeContainerModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ScopeContainerModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/cache/UserCache.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/cache/UserCache.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/UserFederationMapperRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/UserFederationMapperRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientScopeModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientScopeModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/Policy.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/Policy.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/AuthorizationProvider$1.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/AuthorizationProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RequiredActionProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RequiredActionProviderModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/ComponentUtil.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/ComponentUtil.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserCredentialModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserCredentialModel.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/RealmRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/RealmRepresentation.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/ScopeStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/ScopeStore.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/DefaultRequiredActions.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/DefaultRequiredActions.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/AuthenticationExecutionExportRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/AuthenticationExecutionExportRepresentation.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/PolicyStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/PolicyStore.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/AuthenticatorConfigModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/AuthenticatorConfigModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ProtocolMapperContainerModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ProtocolMapperContainerModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/AuthenticationExecutionModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/AuthenticationExecutionModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/AuthorizationProvider.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/AuthorizationProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmModel.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/CredentialRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/CredentialRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/ClientTemplateRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/ClientTemplateRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/AuthenticationExecutionModel$Requirement.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/AuthenticationExecutionModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/credential/PasswordUserCredentialModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/credential/PasswordUserCredentialModel.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/IdentityProviderMapperRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/IdentityProviderMapperRepresentation.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/IdentityProviderRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/IdentityProviderRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/PasswordPolicy.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/PasswordPolicy.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/policy/PasswordPolicyProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/policy/PasswordPolicyProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/storage/UserStorageProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/storage/UserStorageProviderModel.java
+ - target:
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/KeycloakModelUtils.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/KeycloakModelUtils.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientScopeModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientScopeModel.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/PemException.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/PemException.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/transaction/JtaTransactionManagerLookup.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/transaction/JtaTransactionManagerLookup.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSession.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSession.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/GroupModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/GroupModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/storage/UserStorageProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/storage/UserStorageProviderModel.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/CertificateUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/CertificateUtils.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/PemUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/PemUtils.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSessionTask.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSessionTask.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Base64.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Base64.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/idm/CertificateRepresentation.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/idm/CertificateRepresentation.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSessionFactory.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSessionFactory.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/DerUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/DerUtils.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ScopeContainerModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ScopeContainerModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/AuthenticationFlowModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/AuthenticationFlowModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserCredentialModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserCredentialModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/storage/CacheableStorageProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/storage/CacheableStorageProviderModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakTransaction.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakTransaction.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RoleModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RoleModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/PrioritizedComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/PrioritizedComponentModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/IdentityProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/IdentityProviderModel.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/AuthenticationExecutionModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/AuthenticationExecutionModel.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/KeyUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/KeyUtils.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/KeycloakUriBuilder.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/KeycloakUriBuilder.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Encode.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Encode.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/PathHelper.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/PathHelper.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/NetworkUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/NetworkUtils.java
+ - target:
+   - dir: integration/client-registration/target/classes
+     file: org/keycloak/client/registration/HttpUtil.class
+     sourceDir: integration/client-registration/src/main/java
+     sourceFile: org/keycloak/client/registration/HttpUtil.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/StreamUtil.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/StreamUtil.java
+   - dir: integration/client-registration/target/classes
+     file: org/keycloak/client/registration/ClientRegistrationException.class
+     sourceDir: integration/client-registration/src/main/java
+     sourceFile: org/keycloak/client/registration/ClientRegistrationException.java
+   - dir: integration/client-registration/target/classes
+     file: org/keycloak/client/registration/HttpErrorException.class
+     sourceDir: integration/client-registration/src/main/java
+     sourceFile: org/keycloak/client/registration/HttpErrorException.java
+   - dir: integration/client-registration/target/classes
+     file: org/keycloak/client/registration/Auth.class
+     sourceDir: integration/client-registration/src/main/java
+     sourceFile: org/keycloak/client/registration/Auth.java
+ - target:
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/UserCacheSession.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/UserCacheSession.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/events/UserConsentsUpdatedEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/events/UserConsentsUpdatedEvent.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSession.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSession.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/GroupModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/GroupModel.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/CachedFederatedIdentityLinks.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/CachedFederatedIdentityLinks.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/CachedUser.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/CachedUser.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/events/InvalidationEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/events/InvalidationEvent.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/events/UserFederationLinkRemovedEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/events/UserFederationLinkRemovedEvent.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Time.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Time.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/UpdateCounter.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/UpdateCounter.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/PrioritizedComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/PrioritizedComponentModel.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/UserAdapter.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/UserAdapter.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/CacheManager.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/CacheManager.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/events/UserCacheRealmInvalidationEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/events/UserCacheRealmInvalidationEvent.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/UserCacheSession$2.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/UserCacheSession.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/FederatedIdentityModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/FederatedIdentityModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/storage/UserStorageProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/storage/UserStorageProviderModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ProtocolMapperModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ProtocolMapperModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/cluster/ClusterProvider.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/cluster/ClusterProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/KeycloakModelUtils.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/KeycloakModelUtils.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/storage/CacheableStorageProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/storage/CacheableStorageProviderModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakTransaction.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakTransaction.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientModel.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/ClearCacheEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/ClearCacheEvent.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/cache/CachedObject.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/cache/CachedObject.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/CachedUserConsents.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/CachedUserConsents.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/Revisioned.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/Revisioned.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RoleModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RoleModel.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/AbstractExtendableRevisioned.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/AbstractExtendableRevisioned.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/storage/StorageId.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/storage/StorageId.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/stream/InRealmPredicate.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/stream/InRealmPredicate.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientScopeModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientScopeModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/ReadOnlyUserModelDelegate.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/ReadOnlyUserModelDelegate.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/cache/CachedUserModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/cache/CachedUserModel.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/UserListQuery.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/UserListQuery.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/events/UserFullInvalidationEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/events/UserFullInvalidationEvent.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/cache/OnUserCache.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/cache/OnUserCache.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserConsentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserConsentModel.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/AbstractRevisioned.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/AbstractRevisioned.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/CachedUserConsent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/CachedUserConsent.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/events/UserFederationLinkUpdatedEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/events/UserFederationLinkUpdatedEvent.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/utils/UserModelDelegate.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/utils/UserModelDelegate.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/UserCacheSession$1.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/UserCacheSession.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/events/UserUpdatedEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/events/UserUpdatedEvent.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakTransactionManager.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakTransactionManager.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/UserCacheManager.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/UserCacheManager.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/DefaultLazyLoader.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/DefaultLazyLoader.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/storage/CacheableStorageProviderModel$CachePolicy.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/storage/CacheableStorageProviderModel.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/UriUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/UriUtils.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+ - target:
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSession.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSession.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/ResourceServer.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/ResourceServer.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession$PolicyCache.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Time.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Time.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/UpdateCounter.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/UpdateCounter.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/CacheManager.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/CacheManager.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/events/ScopeUpdatedEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/events/ScopeUpdatedEvent.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession$ResourceServerCache.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/AbstractRevisioned.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/AbstractRevisioned.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/Policy.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/Policy.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/cluster/ClusterProvider.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/cluster/ClusterProvider.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/entities/CachedResource.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/entities/CachedResource.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession$1.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/ResourceServerAdapter.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/ResourceServerAdapter.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakTransaction.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakTransaction.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/Scope.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/Scope.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/PermissionTicketStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/PermissionTicketStore.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakTransactionManager.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakTransactionManager.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/events/ResourceUpdatedEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/events/ResourceUpdatedEvent.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/Resource.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/Resource.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/ScopeAdapter.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/ScopeAdapter.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/ResourceStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/ResourceStore.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/DefaultLazyLoader.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/DefaultLazyLoader.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/StoreFactory.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/StoreFactory.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/entities/CachedScope.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/entities/CachedScope.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/stream/InResourcePredicate.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/stream/InResourcePredicate.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/ResourceServerStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/ResourceServerStore.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/ScopeStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/ScopeStore.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheManager.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheManager.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/events/InvalidationEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/events/InvalidationEvent.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/stream/InScopePredicate.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/stream/InScopePredicate.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/ResourceAdapter.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/ResourceAdapter.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/events/ResourceServerUpdatedEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/events/ResourceServerUpdatedEvent.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/entities/CachedPolicy.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/entities/CachedPolicy.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/PermissionTicketAdapter.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/PermissionTicketAdapter.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/NonExistentItem.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/NonExistentItem.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession$ResourceCache.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession$2.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession$ScopeCache.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/entities/Revisioned.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/entities/Revisioned.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/events/PermissionTicketUpdatedEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/events/PermissionTicketUpdatedEvent.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession$PermissionTicketCache.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/StoreFactoryCacheSession.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/store/PolicyStore.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/store/PolicyStore.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/PolicyAdapter.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/PolicyAdapter.java
+   - dir: model/infinispan/target/classes
+     file: org/keycloak/models/cache/infinispan/authorization/events/PolicyUpdatedEvent.class
+     sourceDir: model/infinispan/src/main/java
+     sourceFile: org/keycloak/models/cache/infinispan/authorization/events/PolicyUpdatedEvent.java
+ - target:
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/RealmAdapter.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/RealmAdapter.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/UserProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/UserProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/IdentityProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/IdentityProviderModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSession.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSession.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/GroupModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/GroupModel.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/AuthenticatorConfigEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/AuthenticatorConfigEntity.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/RealmAttributeEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/RealmAttributeEntity.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/DefaultClientScopeRealmMappingEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/DefaultClientScopeRealmMappingEntity.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/RoleEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/RoleEntity.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSessionFactory.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSessionFactory.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/RealmAdapter$1.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/RealmAdapter.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/AuthenticationFlowEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/AuthenticationFlowEntity.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/RequiredActionProviderEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/RequiredActionProviderEntity.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/RealmEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/RealmEntity.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/ComponentUtil.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/ComponentUtil.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/models/utils/KeycloakModelUtils.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/models/utils/KeycloakModelUtils.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/IdentityProviderMapperModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/IdentityProviderMapperModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/AuthenticationFlowModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/AuthenticationFlowModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ModelException.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ModelException.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/GroupAdapter.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/GroupAdapter.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmProvider.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/PasswordPolicy$Builder.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/PasswordPolicy.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/ComponentEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/ComponentEntity.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+   - dir: common/target/classes
+     file: org/keycloak/common/enums/SslRequired.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/enums/SslRequired.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientScopeModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientScopeModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentModel.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/RoleAdapter.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/RoleAdapter.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/ClientEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/ClientEntity.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/ClientModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/ClientModel.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/IdentityProviderEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/IdentityProviderEntity.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/ClientScopeEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/ClientScopeEntity.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/PasswordPolicy.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/PasswordPolicy.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentFactory.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentFactory.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/OTPPolicy.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/OTPPolicy.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/ClientScopeAdapter.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/ClientScopeAdapter.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/AuthenticationExecutionEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/AuthenticationExecutionEntity.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/RealmAdapter$2.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/RealmAdapter.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RequiredActionProviderModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RequiredActionProviderModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/AuthenticatorConfigModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/AuthenticatorConfigModel.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/IdentityProviderMapperEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/IdentityProviderMapperEntity.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/storage/OnUpdateComponent.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/storage/OnUpdateComponent.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/GroupEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/GroupEntity.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RequiredCredentialModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RequiredCredentialModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/policy/PasswordPolicyProvider.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/policy/PasswordPolicyProvider.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/RequiredCredentialEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/RequiredCredentialEntity.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/policy/PasswordPolicyConfigException.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/policy/PasswordPolicyConfigException.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/storage/OnCreateComponent.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/storage/OnCreateComponent.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RoleModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RoleModel.java
+   - dir: model/jpa/target/classes
+     file: org/keycloak/models/jpa/entities/ComponentConfigEntity.class
+     sourceDir: model/jpa/src/main/java
+     sourceFile: org/keycloak/models/jpa/entities/ComponentConfigEntity.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/AuthenticationExecutionModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/AuthenticationExecutionModel.java
+ - target:
+   - dir: adapters/spi/servlet-adapter-spi/target/classes
+     file: org/keycloak/adapters/servlet/FilterSessionStore.class
+     sourceDir: adapters/spi/servlet-adapter-spi/src/main/java
+     sourceFile: org/keycloak/adapters/servlet/FilterSessionStore.java
+   - dir: adapters/spi/adapter-spi/target/classes
+     file: org/keycloak/adapters/spi/HttpFacade$Request.class
+     sourceDir: adapters/spi/adapter-spi/src/main/java
+     sourceFile: org/keycloak/adapters/spi/HttpFacade.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+   - dir: adapters/spi/servlet-adapter-spi/target/classes
+     file: org/keycloak/adapters/servlet/FilterSessionStore$2.class
+     sourceDir: adapters/spi/servlet-adapter-spi/src/main/java
+     sourceFile: org/keycloak/adapters/servlet/FilterSessionStore.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Encode.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Encode.java
+   - dir: adapters/spi/adapter-spi/target/classes
+     file: org/keycloak/adapters/spi/HttpFacade.class
+     sourceDir: adapters/spi/adapter-spi/src/main/java
+     sourceFile: org/keycloak/adapters/spi/HttpFacade.java
+   - dir: adapters/spi/adapter-spi/target/classes
+     file: org/keycloak/adapters/spi/KeycloakAccount.class
+     sourceDir: adapters/spi/adapter-spi/src/main/java
+     sourceFile: org/keycloak/adapters/spi/KeycloakAccount.java
+   - dir: adapters/spi/servlet-adapter-spi/target/classes
+     file: org/keycloak/adapters/servlet/FilterSessionStore$1.class
+     sourceDir: adapters/spi/servlet-adapter-spi/src/main/java
+     sourceFile: org/keycloak/adapters/servlet/FilterSessionStore.java
+ - target:
+   - dir: authz/policy/common/target/classes
+     file: org/keycloak/authorization/policy/provider/time/TimePolicyProvider.class
+     sourceDir: authz/policy/common/src/main/java
+     sourceFile: org/keycloak/authorization/policy/provider/time/TimePolicyProvider.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/model/Policy.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/model/Policy.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/attribute/Attributes.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/attribute/Attributes.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/policy/evaluation/Evaluation.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/policy/evaluation/Evaluation.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/attribute/Attributes$Entry.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/attribute/Attributes.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/authorization/policy/evaluation/EvaluationContext.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/authorization/policy/evaluation/EvaluationContext.java
+ - target:
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/processing/web/util/RedirectBindingUtil.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/processing/web/util/RedirectBindingUtil.java
+   - dir: saml-core-api/target/classes
+     file: org/keycloak/saml/common/util/Base64$OutputStream.class
+     sourceDir: saml-core-api/src/main/java
+     sourceFile: org/keycloak/saml/common/util/Base64.java
+   - dir: saml-core-api/target/classes
+     file: org/keycloak/saml/common/util/Base64.class
+     sourceDir: saml-core-api/src/main/java
+     sourceFile: org/keycloak/saml/common/util/Base64.java
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/processing/web/util/RedirectBindingUtil$RedirectBindingUtilDestHolder.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/processing/web/util/RedirectBindingUtil.java
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/common/util/StringUtil.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/common/util/StringUtil.java
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/processing/api/util/DeflateUtil.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/processing/api/util/DeflateUtil.java
+ - target:
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/processing/web/util/PostBindingUtil.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/processing/web/util/PostBindingUtil.java
+   - dir: saml-core-api/target/classes
+     file: org/keycloak/saml/common/util/Base64$OutputStream.class
+     sourceDir: saml-core-api/src/main/java
+     sourceFile: org/keycloak/saml/common/util/Base64.java
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/common/PicketLinkLogger.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/common/PicketLinkLogger.java
+   - dir: saml-core-api/target/classes
+     file: org/keycloak/saml/common/util/Base64.class
+     sourceDir: saml-core-api/src/main/java
+     sourceFile: org/keycloak/saml/common/util/Base64.java
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/common/PicketLinkLoggerFactory.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/common/PicketLinkLoggerFactory.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/HtmlUtils.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/HtmlUtils.java
+ - target:
+   - dir: saml-core/target/classes
+     file: org/keycloak/saml/SPMetadataDescriptor.class
+     sourceDir: saml-core/src/main/java
+     sourceFile: org/keycloak/saml/SPMetadataDescriptor.java
+ - target:
+   - dir: core/target/classes
+     file: org/keycloak/util/TokenUtil.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/util/TokenUtil.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWEException.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWEException.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWE.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWE.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/JsonWebToken.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/JsonWebToken.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jws/JWSInput.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jws/JWSInput.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWEUtils.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWEUtils.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Base64$OutputStream.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Base64.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Base64.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Base64.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWEHeader.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWEHeader.java
+   - dir: core/target/classes
+     file: org/keycloak/representations/RefreshToken.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/representations/RefreshToken.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWEKeyStorage.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWEKeyStorage.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/enc/JWEEncryptionProvider.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/enc/JWEEncryptionProvider.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jws/JWSInputException.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jws/JWSInputException.java
+   - dir: core/target/classes
+     file: org/keycloak/util/JsonSerialization.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/util/JsonSerialization.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/JWERegistry.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/JWERegistry.java
+   - dir: core/target/classes
+     file: org/keycloak/jose/jwe/alg/JWEAlgorithmProvider.class
+     sourceDir: core/src/main/java
+     sourceFile: org/keycloak/jose/jwe/alg/JWEAlgorithmProvider.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/Base64Url.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/Base64Url.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/PathHelper.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/PathHelper.java
+ - target:
+   - dir: common/target/classes
+     file: org/keycloak/common/util/ServerCookie.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/ServerCookie.java
+ - target:
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/Message.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/Message.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/Gettext.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/Gettext.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/exceptions/DBusException.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/exceptions/DBusException.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/UInt64.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/UInt64.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/Variant.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/Variant.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/exceptions/UnknownTypeCodeException.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/exceptions/UnknownTypeCodeException.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/Marshalling.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/Marshalling.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/UInt16.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/UInt16.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/types/DBusMapType.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/types/DBusMapType.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/exceptions/MarshallingException.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/exceptions/MarshallingException.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/DBusMap.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/DBusMap.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/Path.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/Path.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/types/DBusStructType.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/types/DBusStructType.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/UInt32.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/UInt32.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/Position.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/Position.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/Container.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/Container.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/ObjectPath.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/ObjectPath.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/ArrayFrob.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/ArrayFrob.java
+   - dir: federation/sssd/target/classes
+     file: org/freedesktop/dbus/types/DBusListType.class
+     sourceDir: federation/sssd/src/main/java
+     sourceFile: org/freedesktop/dbus/types/DBusListType.java
+ - target:
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/utils/Base32.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/utils/Base32.java
+ - target:
+   - dir: services/target/classes
+     file: org/keycloak/keys/AbstractEcdsaKeyProviderFactory.class
+     sourceDir: services/src/main/java
+     sourceFile: org/keycloak/keys/AbstractEcdsaKeyProviderFactory.java
+   - dir: common/target/classes
+     file: org/keycloak/common/util/MultivaluedHashMap.class
+     sourceDir: common/src/main/java
+     sourceFile: org/keycloak/common/util/MultivaluedHashMap.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentModel.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/provider/ConfigurationValidationHelper.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/provider/ConfigurationValidationHelper.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/RealmModel.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/RealmModel.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/models/KeycloakSession.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/models/KeycloakSession.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/provider/ProviderConfigProperty.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/provider/ProviderConfigProperty.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/provider/ProviderConfigurationBuilder.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/provider/ProviderConfigurationBuilder.java
+   - dir: server-spi/target/classes
+     file: org/keycloak/component/ComponentValidationException.class
+     sourceDir: server-spi/src/main/java
+     sourceFile: org/keycloak/component/ComponentValidationException.java
+ - target:
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/events/Event.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/events/Event.java
+   - dir: server-spi-private/target/classes
+     file: org/keycloak/events/EventType.class
+     sourceDir: server-spi-private/src/main/java
+     sourceFile: org/keycloak/events/EventType.java
